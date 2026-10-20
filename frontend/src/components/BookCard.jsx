@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom';
-import { countAvailableStores, formatPrice, lowestPrice } from '../services/format';
+import { formatBookAvailability, formatPrice, lowestPrice, totalStock } from '../services/format';
 
 export default function BookCard({ book }) {
   const price = lowestPrice(book);
-  const stores = countAvailableStores(book.offers);
+  const inStock = totalStock(book) > 0;
   return (
     <Link
       to={`/libros/${book._id}`}
@@ -29,8 +29,10 @@ export default function BookCard({ book }) {
             'Sin precio registrado'
           )}
         </p>
-        <p className="text-right text-xs font-medium text-sage-700">
-          {stores === 1 ? '1 librería' : `${stores} librerías`}
+        <p
+          className={`text-right text-xs font-medium ${inStock ? 'text-sage-700' : 'text-stone-500'}`}
+        >
+          {formatBookAvailability(book)}
         </p>
       </div>
     </Link>

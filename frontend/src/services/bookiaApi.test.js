@@ -32,7 +32,7 @@ describe('bookiaApi', () => {
     await storesApi.create({ name: 'S' });
     await storesApi.update('s1', { name: 'S' });
     await storesApi.remove('s1');
-    await offersApi.create({ book_id: 'b', store_id: 's', price: 10, is_available: true });
+    await offersApi.create({ book_id: 'b', store_id: 's', price: 10, stock: 3 });
     await offersApi.update('o1', { price: 5 });
     await offersApi.remove('o1');
     await authApi.login('a@b.mx', 'secret');

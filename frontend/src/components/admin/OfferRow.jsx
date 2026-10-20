@@ -1,15 +1,29 @@
 import { useState } from 'react';
-import { formatPrice } from '../../services/format';
+import { formatPrice, parseStock } from '../../services/format';
 import AvailabilityBadge from '../AvailabilityBadge';
 
-// One offer row with inline editing of price and availability.
+// One offer row with inline editing of price and stock.
 export default function OfferRow({ offer, onSave, onDelete }) {
   const [editing, setEditing] = useState(false);
   const [price, setPrice] = useState(String(offer.price));
-  const [available, setAvailable] = useState(Boolean(offer.is_available));
+  const [stock, setStock] = useState(String(offer.stock ?? 0));
+  const [stockError, setStockError] = useState('');
 
   async function handleSave() {
-    await onSave(offer, { price: Number(price), is_available: available });
+    const parsed = parseStock(stock);
+    if (parsed.error) {
+      setStockError(parsed.error);
+      return;
+    }
+    setStockError('');
+    await onSave(offer, { price: Number(price), stock: parsed.value });
+    setEditing(false);
+  }
+
+  function handleCancel() {
+    setPrice(String(offer.price));
+    setStock(String(offer.stock ?? 0));
+    setStockError('');
     setEditing(false);
   }
 
@@ -33,16 +47,26 @@ export default function OfferRow({ offer, onSave, onDelete }) {
       </td>
       <td className="px-4 py-3">
         {editing ? (
-          <label className="inline-flex items-center gap-2">
+          <div>
             <input
-              type="checkbox"
-              checked={available}
-              onChange={(e) => setAvailable(e.target.checked)}
+              type="number"
+              min="0"
+              step="1"
+              inputMode="numeric"
+              aria-label="Existencias"
+              aria-invalid={Boolean(stockError)}
+              className="input w-24"
+              value={stock}
+              onChange={(e) => setStock(e.target.value)}
             />
-            Disponible
-          </label>
+            {stockError && (
+              <p role="alert" className="mt-1 text-xs text-red-700">
+                {stockError}
+              </p>
+            )}
+          </div>
         ) : (
-          <AvailabilityBadge available={offer.is_available} />
+          <AvailabilityBadge stock={offer.stock} />
         )}
       </td>
       <td className="space-x-3 whitespace-nowrap px-4 py-3 text-right">
@@ -58,7 +82,7 @@ export default function OfferRow({ offer, onSave, onDelete }) {
             <button
               type="button"
               className="font-semibold text-stone-500 hover:underline"
-              onClick={() => setEditing(false)}
+              onClick={handleCancel}
             >
               Cancelar
             </button>
