@@ -2,6 +2,8 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 import BookDetailPage from './pages/BookDetailPage';
+import AdminLoginPage from './pages/AdminLoginPage';
+import FavoritesPage from './pages/FavoritesPage';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import NotFoundPage from './pages/NotFoundPage';
@@ -21,7 +23,9 @@ export default function App() {
         <Route path="libros/:id" element={<BookDetailPage />} />
         <Route path="establecimientos" element={<StoresPage />} />
         <Route path="establecimientos/:id" element={<StoreDetailPage />} />
-        <Route path="admin/login" element={<LoginPage />} />
+        <Route path="ingresar" element={<LoginPage />} />
+        <Route path="favoritos" element={<FavoritesPage />} />
+        <Route path="admin/login" element={<AdminLoginPage />} />
         <Route element={<ProtectedRoute />}>
           <Route path="admin" element={<AdminLayout />}>
             <Route index element={<Navigate to="libros" replace />} />

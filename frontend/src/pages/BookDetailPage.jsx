@@ -1,6 +1,7 @@
 import { Link, useParams } from 'react-router-dom';
 import AvailabilityBadge from '../components/AvailabilityBadge';
 import BackLink from '../components/BackLink';
+import FavoriteButton from '../components/FavoriteButton';
 import { EmptyState, ErrorState, LoadingState } from '../components/StatusMessages';
 import { useAsync } from '../hooks/useAsync';
 import { booksApi } from '../services/bookiaApi';
@@ -61,6 +62,9 @@ export default function BookDetailPage() {
           <Meta label="ISBN" value={book.isbn} />
           <Meta label="Género" value={book.genre} />
         </dl>
+        <div className="mt-6">
+          <FavoriteButton bookId={book._id} />
+        </div>
       </article>
 
       <section>

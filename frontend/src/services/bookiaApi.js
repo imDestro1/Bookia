@@ -25,9 +25,16 @@ export const offersApi = {
 };
 
 export const authApi = {
-  login: (email, password) => http.post('/auth/login', { email, password }),
+  login: (email, password, portal) => http.post('/auth/login', { email, password, portal }),
+  register: (account) => http.post('/auth/register', account),
   logout: () => http.post('/auth/logout'),
   me: () => http.get('/auth/me'),
+};
+
+export const favoritesApi = {
+  list: (options) => http.get('/favorites', options),
+  add: (bookId) => http.put(`/favorites/${encodeURIComponent(bookId)}`),
+  remove: (bookId) => http.delete(`/favorites/${encodeURIComponent(bookId)}`),
 };
 
 export const auditApi = {

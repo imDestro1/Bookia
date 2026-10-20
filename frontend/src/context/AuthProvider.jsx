@@ -22,8 +22,15 @@ export function AuthProvider({ children }) {
     refresh();
   }, [refresh]);
 
-  const login = useCallback(async (email, password) => {
-    const data = await authApi.login(email, password);
+  const login = useCallback(async (email, password, portal) => {
+    const data = await authApi.login(email, password, portal);
+    setUser(data?.user ?? null);
+    setStatus('authenticated');
+    return data?.user;
+  }, []);
+
+  const register = useCallback(async (account) => {
+    const data = await authApi.register(account);
     setUser(data?.user ?? null);
     setStatus('authenticated');
     return data?.user;
@@ -45,10 +52,11 @@ export function AuthProvider({ children }) {
       isAuthenticated: status === 'authenticated',
       isAdmin: user?.role === 'admin',
       login,
+      register,
       logout,
       refresh,
     }),
-    [user, status, login, logout, refresh],
+    [user, status, login, register, logout, refresh],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
