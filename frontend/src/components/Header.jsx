@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { booksApi } from '../services/bookiaApi';
@@ -42,7 +42,25 @@ export default function Header() {
   const [query, setQuery] = useState(searchParams.get('q') ?? '');
   const [genres, setGenres] = useState([]);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
+  const categoriesRef = useRef(null);
   const activeGenre = searchParams.get('genre') ?? '';
+
+  // Close the categories panel on outside click or Escape.
+  useEffect(() => {
+    if (!categoriesOpen) return undefined;
+    function handlePointer(event) {
+      if (!categoriesRef.current?.contains(event.target)) setCategoriesOpen(false);
+    }
+    function handleKey(event) {
+      if (event.key === 'Escape') setCategoriesOpen(false);
+    }
+    document.addEventListener('mousedown', handlePointer);
+    document.addEventListener('keydown', handleKey);
+    return () => {
+      document.removeEventListener('mousedown', handlePointer);
+      document.removeEventListener('keydown', handleKey);
+    };
+  }, [categoriesOpen]);
 
   useEffect(() => {
     setQuery(searchParams.get('q') ?? '');
@@ -129,16 +147,55 @@ export default function Header() {
 
       <div className="bg-leather-800">
         <div className="mx-auto flex max-w-6xl items-center gap-2 px-4 py-3">
-          <button
-            type="button"
-            onClick={() => setCategoriesOpen((open) => !open)}
-            aria-expanded={categoriesOpen}
-            aria-controls="category-panel"
-            className="flex shrink-0 items-center gap-2 rounded-full bg-leather-700 px-3 py-2.5 text-sm font-semibold text-white hover:bg-leather-600"
-          >
-            <Icon path={ICONS.menu} />
-            <span className="hidden sm:inline">Categorías</span>
-          </button>
+          <div ref={categoriesRef} className="relative shrink-0">
+            <button
+              type="button"
+              onClick={() => setCategoriesOpen((open) => !open)}
+              aria-expanded={categoriesOpen}
+              aria-controls="category-panel"
+              aria-haspopup="menu"
+              className="flex items-center gap-2 rounded-full bg-leather-700 px-3 py-2.5 text-sm font-semibold text-white hover:bg-leather-600"
+            >
+              <Icon path={ICONS.menu} />
+              <span className="hidden sm:inline">Categorías</span>
+            </button>
+            {categoriesOpen && (
+              <div
+                id="category-panel"
+                role="menu"
+                aria-label="Categorías"
+                className="absolute left-0 top-full z-40 mt-2 w-72 max-w-[calc(100vw-2rem)] rounded-2xl border border-leather-100 bg-white p-3 text-ink shadow-xl"
+              >
+                <p className="px-2 pb-2 text-xs font-semibold uppercase tracking-widest text-leather-600">
+                  Explora por género
+                </p>
+                {genres.length === 0 ? (
+                  <p className="px-2 py-1 text-sm text-stone-500">
+                    Aún no hay géneros registrados.
+                  </p>
+                ) : (
+                  <ul className="grid max-h-72 grid-cols-2 gap-1 overflow-y-auto">
+                    {['', ...genres].map((genre) => (
+                      <li key={genre || 'all'}>
+                        <button
+                          type="button"
+                          role="menuitem"
+                          onClick={() => goToGenre(genre)}
+                          className={`w-full rounded-lg px-2 py-1.5 text-left text-sm transition ${
+                            activeGenre === genre
+                              ? 'bg-leather-100 font-semibold text-leather-800'
+                              : 'hover:bg-leather-50 hover:text-leather-700'
+                          }`}
+                        >
+                          {genre || 'Todos los libros'}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
+          </div>
           <form role="search" onSubmit={handleSearch} className="relative flex-1">
             <label htmlFor="header-search" className="sr-only">
               Buscar libros
@@ -162,30 +219,6 @@ export default function Header() {
             </button>
           </form>
         </div>
-
-        {genres.length > 0 && (
-          <div
-            id="category-panel"
-            className={`${categoriesOpen ? 'block' : 'hidden'} border-t border-white/10 md:block`}
-          >
-            <div className="mx-auto flex max-w-6xl flex-wrap gap-2 px-4 py-2 md:flex-nowrap md:overflow-x-auto">
-              {['', ...genres].map((genre) => (
-                <button
-                  key={genre || 'all'}
-                  type="button"
-                  onClick={() => goToGenre(genre)}
-                  className={`shrink-0 rounded-full border px-3 py-1 text-xs font-semibold transition ${
-                    activeGenre === genre
-                      ? 'border-leather-300 bg-leather-300 text-leather-900'
-                      : 'border-white/20 text-leather-100 hover:border-leather-300 hover:text-white'
-                  }`}
-                >
-                  {genre || 'Todos'}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
     </header>
   );
