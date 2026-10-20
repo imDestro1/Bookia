@@ -5,7 +5,8 @@ import Pagination from '../../components/Pagination';
 import { EmptyState, ErrorState, LoadingState } from '../../components/StatusMessages';
 import { useAsync } from '../../hooks/useAsync';
 import { useNotice } from '../../hooks/useNotice';
-import { booksApi } from '../../services/bookiaApi';
+import { booksApi, storesApi } from '../../services/bookiaApi';
+import { validateInitialOffer } from '../../services/offerValidation';
 
 const LIMIT = 20;
 const BOOK_FIELDS = [
@@ -17,12 +18,94 @@ const BOOK_FIELDS = [
   { name: 'isbn', label: 'ISBN' },
 ];
 
+const EMPTY_OFFER = { enabled: true, store_id: '', price: '', stock: '1' };
+
+function InitialOfferFields({ offer, stores, onChange }) {
+  function update(event) {
+    const { name, value, type, checked } = event.target;
+    onChange({ ...offer, [name]: type === 'checkbox' ? !checked : value });
+  }
+
+  return (
+    <fieldset className="rounded-lg border border-leather-100 bg-leather-50/50 p-4">
+      <legend className="px-1 font-serif font-bold text-leather-800">
+        Dónde se vende (oferta inicial)
+      </legend>
+      {offer.enabled && (
+        <div className="grid gap-3 sm:grid-cols-3">
+          <div>
+            <label htmlFor="offer-store" className="label">
+              Librería *
+            </label>
+            <select
+              id="offer-store"
+              name="store_id"
+              required
+              value={offer.store_id}
+              onChange={update}
+              className="input"
+            >
+              <option value="">Selecciona…</option>
+              {stores.map((store) => (
+                <option key={store._id} value={store._id}>
+                  {store.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label htmlFor="offer-price" className="label">
+              Precio (MXN) *
+            </label>
+            <input
+              id="offer-price"
+              name="price"
+              type="number"
+              min="0.01"
+              step="0.01"
+              inputMode="decimal"
+              required
+              value={offer.price}
+              onChange={update}
+              className="input"
+            />
+          </div>
+          <div>
+            <label htmlFor="offer-stock" className="label">
+              Existencias *
+            </label>
+            <input
+              id="offer-stock"
+              name="stock"
+              type="number"
+              min="0"
+              step="1"
+              inputMode="numeric"
+              required
+              value={offer.stock}
+              onChange={update}
+              className="input"
+            />
+          </div>
+        </div>
+      )}
+      <label className="mt-3 flex items-center gap-2 text-sm text-stone-600">
+        <input type="checkbox" name="enabled" checked={!offer.enabled} onChange={update} />
+        Agregar la oferta después (en la pestaña Ofertas)
+      </label>
+    </fieldset>
+  );
+}
+
 export default function BooksAdmin() {
   const [query, setQuery] = useState('');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [editing, setEditing] = useState(null);
+  const [offer, setOffer] = useState(EMPTY_OFFER);
   const { notice, success, fail, clear } = useNotice();
+  const stores = useAsync(({ signal }) => storesApi.list({ signal }), []);
+  const isNew = Boolean(editing && !editing._id);
   const { data, loading, error, reload } = useAsync(
     ({ signal }) => booksApi.search({ q: search, page, limit: LIMIT }, { signal }),
     [search, page],
@@ -30,9 +113,18 @@ export default function BooksAdmin() {
   const books = data?.items ?? [];
 
   async function handleSave(payload) {
-    if (editing._id) await booksApi.update(editing._id, payload);
-    else await booksApi.create(payload);
-    success(editing._id ? 'Libro actualizado.' : 'Libro creado.');
+    if (editing._id) {
+      await booksApi.update(editing._id, payload);
+      success('Libro actualizado.');
+    } else {
+      const offerError = validateInitialOffer(offer);
+      if (offerError) throw new Error(offerError);
+      const initialOffer = offer.enabled
+        ? { store_id: offer.store_id, price: Number(offer.price), stock: Number(offer.stock) }
+        : undefined;
+      await booksApi.create({ ...payload, initial_offer: initialOffer });
+      success(initialOffer ? 'Libro y oferta creados.' : 'Libro creado (sin oferta todavía).');
+    }
     setEditing(null);
     reload();
   }
@@ -75,7 +167,14 @@ export default function BooksAdmin() {
             Buscar
           </button>
         </form>
-        <button type="button" className="btn-primary" onClick={() => setEditing({})}>
+        <button
+          type="button"
+          className="btn-primary"
+          onClick={() => {
+            setOffer(EMPTY_OFFER);
+            setEditing({});
+          }}
+        >
           Nuevo libro
         </button>
       </div>
@@ -87,7 +186,15 @@ export default function BooksAdmin() {
           initial={editing}
           onSubmit={handleSave}
           onCancel={() => setEditing(null)}
-        />
+        >
+          {isNew && (
+            <InitialOfferFields
+              offer={offer}
+              stores={Array.isArray(stores.data) ? stores.data : []}
+              onChange={setOffer}
+            />
+          )}
+        </ResourceForm>
       )}
 
       {loading && <LoadingState />}

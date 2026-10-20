@@ -10,7 +10,8 @@ function toFormValues(fields, initial) {
 }
 
 // Generic create/edit form driven by a field config list.
-export default function ResourceForm({ title, fields, initial, onSubmit, onCancel }) {
+// `children` renders extra controls (owned by the parent) below the fields.
+export default function ResourceForm({ title, fields, initial, onSubmit, onCancel, children }) {
   const [values, setValues] = useState(() => toFormValues(fields, initial));
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
@@ -64,6 +65,7 @@ export default function ResourceForm({ title, fields, initial, onSubmit, onCance
           </div>
         ))}
       </div>
+      {children}
       {error && (
         <p role="alert" className="text-sm font-medium text-red-700">
           {error}
