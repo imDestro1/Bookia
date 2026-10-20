@@ -4,7 +4,7 @@ import BackLink from '../components/BackLink';
 import { EmptyState, ErrorState, LoadingState } from '../components/StatusMessages';
 import { useAsync } from '../hooks/useAsync';
 import { booksApi } from '../services/bookiaApi';
-import { formatPrice } from '../services/format';
+import { formatPrice, offerStock } from '../services/format';
 
 function Meta({ label, value }) {
   if (!value) return null;
@@ -18,7 +18,7 @@ function Meta({ label, value }) {
 
 function sortOffers(offers) {
   return [...offers].sort(
-    (a, b) => Number(b.is_available) - Number(a.is_available) || a.price - b.price,
+    (a, b) => Number(offerStock(b) > 0) - Number(offerStock(a) > 0) || a.price - b.price,
   );
 }
 
@@ -78,7 +78,7 @@ export default function BookDetailPage() {
                   >
                     {offer.store?.name}
                   </Link>
-                  <AvailabilityBadge available={offer.is_available} />
+                  <AvailabilityBadge stock={offer.stock} />
                 </div>
                 <p className="text-2xl font-bold text-leather-700">{formatPrice(offer.price)}</p>
                 <div className="space-y-1 text-sm text-stone-600">

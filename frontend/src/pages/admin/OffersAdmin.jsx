@@ -113,7 +113,7 @@ export default function OffersAdmin() {
                   <tr>
                     <th className="px-4 py-3">Establecimiento</th>
                     <th className="px-4 py-3">Precio</th>
-                    <th className="px-4 py-3">Disponibilidad</th>
+                    <th className="px-4 py-3">Existencias</th>
                     <th className="px-4 py-3 text-right">Acciones</th>
                   </tr>
                 </thead>

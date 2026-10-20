@@ -70,7 +70,7 @@ export default function StoreDetailPage() {
                 <tr>
                   <th className="px-4 py-3">Libro</th>
                   <th className="px-4 py-3">Precio</th>
-                  <th className="px-4 py-3">Disponibilidad</th>
+                  <th className="px-4 py-3">Existencias</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-leather-100">
@@ -89,7 +89,7 @@ export default function StoreDetailPage() {
                       {formatPrice(offer.price)}
                     </td>
                     <td className="px-4 py-3">
-                      <AvailabilityBadge available={offer.is_available} />
+                      <AvailabilityBadge stock={offer.stock} />
                     </td>
                   </tr>
                 ))}
