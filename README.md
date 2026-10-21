@@ -12,36 +12,30 @@ Proyecto de Ingeniería en Sistemas Computacionales, TecNM Instituto Tecnológic
 - Panel de administración (JWT en cookie httpOnly, rol `admin`) para dar de alta, editar y eliminar libros, establecimientos y ofertas.
 - Bitácora de auditoría (`audit_logs`) de todas las operaciones de escritura.
 
-## Stack
+## Módulos
 
-- **Frontend**: React + Vite + React Router + Tailwind CSS (`frontend/`)
-- **Backend**: Node.js + Express, API REST (`backend/`)
-- **Base de datos**: MongoDB con Mongoose
-- **Calidad**: ESLint + Prettier, Jest/Supertest (backend), Vitest/Testing Library (frontend), GitHub Actions
+El repositorio tiene dos módulos independientes, cada uno con su propio `package.json`, pruebas y README:
 
-La API vive en `backend/` y es un proyecto independiente del frontend: su documentación está en [backend/README.md](backend/README.md) y el contrato en [backend/API_CONTRACT.md](backend/API_CONTRACT.md).
+| Carpeta | Qué es | Tecnología |
+| --- | --- | --- |
+| [`api/`](api/README.md) | API REST: rutas, controladores, modelos, autenticación, seed y su documentación (contrato, `requests.http`, colección de Postman) | Node.js + Express, MongoDB con Mongoose, Jest/Supertest |
+| [`frontend/`](frontend/) | Aplicación web que consume la API | React + Vite + React Router + Tailwind CSS, Vitest/Testing Library |
+
+El frontend solo habla con la API por HTTP (`/api/...`); ninguno importa código del otro, así que la API se puede correr, probar y entregar sola. El contrato entre los dos está en [api/API_CONTRACT.md](api/API_CONTRACT.md).
+
+Calidad en ambos módulos: ESLint + Prettier y GitHub Actions.
 
 ## Cómo correrlo en local
 
-Requisitos: Node.js 22 y MongoDB corriendo en tu máquina. Elige una de estas dos opciones para MongoDB:
+Requisitos: Node.js 22 y MongoDB. Instala [MongoDB Community Server](https://www.mongodb.com/try/download/community) y deja el servicio corriendo en el puerto 27017 (o usa MongoDB Atlas y pon su cadena en `MONGODB_URI`). Si prefieres Docker, `docker compose up -d` en la raíz levanta MongoDB 7, pero es opcional.
 
-**Opción A: con Docker (recomendada).** Desde la raíz del repo:
-
-```bash
-docker compose up -d      # levanta MongoDB 7 en localhost:27017
-```
-
-Los datos se guardan en un volumen de Docker, así que no se pierden al apagar el contenedor. Para detenerlo: `docker compose down`.
-
-**Opción B: MongoDB instalado.** Instala [MongoDB Community Server](https://www.mongodb.com/try/download/community) y asegúrate de que el servicio esté corriendo en el puerto 27017.
-
-En ambos casos la cadena de conexión es `mongodb://127.0.0.1:27017/bookia` (ya viene así en `.env.example`). Puedes ver los datos con [MongoDB Compass](https://www.mongodb.com/products/tools/compass) conectándote a `mongodb://127.0.0.1:27017`.
+La cadena de conexión local es `mongodb://127.0.0.1:27017/bookia` (ya viene así en `.env.example`). Puedes ver los datos con [MongoDB Compass](https://www.mongodb.com/products/tools/compass) conectándote a `mongodb://127.0.0.1:27017`.
 
 Después:
 
 ```bash
-# 1. Backend
-cd backend
+# 1. API
+cd api
 cp .env.example .env      # en Windows: copy .env.example .env
 # Edita .env: pon un JWT_SECRET cualquiera (texto largo) y una ADMIN_PASSWORD
 npm install
@@ -60,14 +54,14 @@ Abre `http://localhost:5173`. El panel de administración está en `http://local
 
 ### Problemas comunes
 
-- **`MongooseServerSelectionError` / `ECONNREFUSED 127.0.0.1:27017`**: MongoDB no está corriendo. Revisa `docker compose ps` o el servicio de MongoDB.
-- **El backend no arranca y pide `JWT_SECRET`**: falta llenar ese valor en `backend/.env`.
+- **`MongooseServerSelectionError` / `ECONNREFUSED 127.0.0.1:27017`**: MongoDB no está corriendo. Revisa que el servicio de MongoDB esté iniciado.
+- **La API no arranca y pide `JWT_SECRET`**: falta llenar ese valor en `api/.env`.
 - **El login no funciona**: corre `npm run seed` de nuevo después de cambiar `ADMIN_EMAIL` o `ADMIN_PASSWORD`.
 
 ## Pruebas
 
 ```bash
-cd backend && npm run lint && npm test
+cd api && npm run lint && npm test
 cd frontend && npm run lint && npm test && npm run build
 ```
 

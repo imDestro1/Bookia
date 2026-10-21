@@ -1,4 +1,4 @@
-// Resource-level API functions, one per endpoint in backend/API_CONTRACT.md.
+// Resource-level API functions, one per endpoint in api/API_CONTRACT.md.
 import { http } from './apiClient';
 
 export const booksApi = {
