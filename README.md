@@ -27,7 +27,7 @@ Calidad en ambos módulos: ESLint + Prettier y GitHub Actions.
 
 ## Cómo correrlo en local
 
-Requisitos: Node.js 22 y MongoDB. Instala [MongoDB Community Server](https://www.mongodb.com/try/download/community) y deja el servicio corriendo en el puerto 27017 (o usa MongoDB Atlas y pon su cadena en `MONGODB_URI`). Si prefieres Docker, `docker compose up -d` en la raíz levanta MongoDB 7, pero es opcional.
+Requisitos: Node.js 22 y MongoDB. Instala [MongoDB Community Server](https://www.mongodb.com/try/download/community) y deja el servicio corriendo en el puerto 27017 (o usa MongoDB Atlas y pon su cadena en `MONGODB_URI`).
 
 La cadena de conexión local es `mongodb://127.0.0.1:27017/bookia` (ya viene así en `.env.example`). Puedes ver los datos con [MongoDB Compass](https://www.mongodb.com/products/tools/compass) conectándote a `mongodb://127.0.0.1:27017`.
 
