@@ -19,7 +19,7 @@ Proyecto de Ingeniería en Sistemas Computacionales, TecNM Instituto Tecnológic
 - **Base de datos**: MongoDB con Mongoose
 - **Calidad**: ESLint + Prettier, Jest/Supertest (backend), Vitest/Testing Library (frontend), GitHub Actions
 
-El contrato de la API está en [API_CONTRACT.md](API_CONTRACT.md).
+La API vive en `backend/` y es un proyecto independiente del frontend: su documentación está en [backend/README.md](backend/README.md) y el contrato en [backend/API_CONTRACT.md](backend/API_CONTRACT.md).
 
 ## Cómo correrlo en local
 
