@@ -12,14 +12,22 @@ function LocationProbe() {
   return <p data-testid="location">{location.pathname + location.search}</p>;
 }
 
-function renderHeader() {
+function renderHeader(path = '/') {
   mockFetch(() => jsonResponse({ genres: ['Novela', 'Poesía'], publishers: [] }));
   return render(
     <AuthContext.Provider value={{ isAuthenticated: false, isAdmin: false }}>
-      <MemoryRouter future={ROUTER_FUTURE}>
+      <MemoryRouter future={ROUTER_FUTURE} initialEntries={[path]}>
         <Header />
         <Routes>
-          <Route path="*" element={<LocationProbe />} />
+          <Route
+            path="*"
+            element={
+              <>
+                <LocationProbe />
+                <input id="q" aria-label="Búsqueda de la página" />
+              </>
+            }
+          />
         </Routes>
       </MemoryRouter>
     </AuthContext.Provider>,
@@ -55,7 +63,7 @@ describe('Header categories menu', () => {
 
 describe('Header search', () => {
   it('stays hidden until the search icon opens it, then searches and closes', async () => {
-    renderHeader();
+    renderHeader('/establecimientos');
     expect(screen.queryByRole('search')).not.toBeInTheDocument();
 
     await userEvent.click(screen.getByRole('button', { name: 'Buscar' }));
@@ -68,7 +76,7 @@ describe('Header search', () => {
   });
 
   it('closes with Escape or the close button', async () => {
-    renderHeader();
+    renderHeader('/favoritos');
     await userEvent.click(screen.getByRole('button', { name: 'Buscar' }));
     await userEvent.keyboard('{Escape}');
     expect(screen.queryByRole('search')).not.toBeInTheDocument();
@@ -76,5 +84,13 @@ describe('Header search', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Buscar' }));
     await userEvent.click(screen.getByRole('button', { name: 'Cerrar búsqueda' }));
     expect(screen.queryByRole('search')).not.toBeInTheDocument();
+  });
+
+  it('on the home page focuses the page search instead of opening a second bar', async () => {
+    Element.prototype.scrollIntoView = () => {};
+    renderHeader('/');
+    await userEvent.click(screen.getByRole('button', { name: 'Buscar' }));
+    expect(screen.queryByRole('search')).not.toBeInTheDocument();
+    expect(screen.getByLabelText('Búsqueda de la página')).toHaveFocus();
   });
 });
