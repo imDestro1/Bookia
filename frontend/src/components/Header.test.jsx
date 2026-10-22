@@ -12,10 +12,10 @@ function LocationProbe() {
   return <p data-testid="location">{location.pathname + location.search}</p>;
 }
 
-function renderHeader(path = '/') {
+function renderHeader(path = '/', auth = { isAuthenticated: false, isAdmin: false }) {
   mockFetch(() => jsonResponse({ genres: ['Novela', 'Poesía'], publishers: [] }));
   return render(
-    <AuthContext.Provider value={{ isAuthenticated: false, isAdmin: false }}>
+    <AuthContext.Provider value={auth}>
       <MemoryRouter future={ROUTER_FUTURE} initialEntries={[path]}>
         <Header />
         <Routes>
@@ -92,5 +92,19 @@ describe('Header search', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Buscar' }));
     expect(screen.queryByRole('search')).not.toBeInTheDocument();
     expect(screen.getByLabelText('Búsqueda de la página')).toHaveFocus();
+  });
+});
+
+describe('Header account link', () => {
+  it('opens the profile page from the avatar of a signed-in reader', async () => {
+    renderHeader('/', {
+      isAuthenticated: true,
+      isAdmin: false,
+      user: { name: 'Ana Lectora', email: 'ana@test.dev', role: 'reader' },
+    });
+    const profileLink = screen.getByRole('link', { name: 'Mi perfil' });
+    expect(profileLink).toHaveTextContent('A');
+    await userEvent.click(profileLink);
+    expect(screen.getByTestId('location')).toHaveTextContent('/perfil');
   });
 });

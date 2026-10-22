@@ -225,12 +225,25 @@ export default function Header() {
             )}
             {isAuthenticated ? (
               <div className="flex items-center gap-1">
-                <span className="flex items-center gap-1.5 px-2 text-sm text-leather-100">
+                <NavLink
+                  to="/perfil"
+                  aria-label="Mi perfil"
+                  title="Mi perfil"
+                  className={({ isActive }) =>
+                    `flex items-center gap-1.5 rounded-full py-1 pl-1 pr-1 text-sm transition lg:pr-3 ${
+                      isActive
+                        ? 'bg-white/15 text-white'
+                        : 'text-leather-100 hover:bg-white/10 hover:text-white'
+                    }`
+                  }
+                >
                   <span className="grid h-7 w-7 place-items-center rounded-full bg-leather-400 text-xs font-bold uppercase text-leather-900">
                     {firstName.slice(0, 1)}
                   </span>
-                  <span className="hidden lg:inline">Hola, {firstName}</span>
-                </span>
+                  <span className="hidden lg:inline" aria-hidden="true">
+                    Hola, {firstName}
+                  </span>
+                </NavLink>
                 <button
                   type="button"
                   onClick={handleLogout}

@@ -7,6 +7,7 @@ import FavoritesPage from './pages/FavoritesPage';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import NotFoundPage from './pages/NotFoundPage';
+import ProfilePage from './pages/ProfilePage';
 import StoreDetailPage from './pages/StoreDetailPage';
 import StoresPage from './pages/StoresPage';
 import AdminLayout from './pages/admin/AdminLayout';
@@ -25,6 +26,7 @@ export default function App() {
         <Route path="establecimientos/:id" element={<StoreDetailPage />} />
         <Route path="ingresar" element={<LoginPage />} />
         <Route path="favoritos" element={<FavoritesPage />} />
+        <Route path="perfil" element={<ProfilePage />} />
         <Route path="admin/login" element={<AdminLoginPage />} />
         <Route element={<ProtectedRoute />}>
           <Route path="admin" element={<AdminLayout />}>

@@ -36,6 +36,12 @@ export function AuthProvider({ children }) {
     return data?.user;
   }, []);
 
+  const updateProfile = useCallback(async (profile) => {
+    const data = await authApi.updateMe(profile);
+    setUser(data?.user ?? null);
+    return data?.user;
+  }, []);
+
   const logout = useCallback(async () => {
     try {
       await authApi.logout();
@@ -53,10 +59,11 @@ export function AuthProvider({ children }) {
       isAdmin: user?.role === 'admin',
       login,
       register,
+      updateProfile,
       logout,
       refresh,
     }),
-    [user, status, login, register, logout, refresh],
+    [user, status, login, register, updateProfile, logout, refresh],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
