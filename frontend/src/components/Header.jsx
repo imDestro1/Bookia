@@ -37,7 +37,7 @@ const quickLinkClass = ({ isActive }) =>
 
 // Main header: brand, quick access, a genre menu and a search box that opens on demand.
 export default function Header() {
-  const { isAuthenticated, isAdmin, user, logout } = useAuth();
+  const { isAuthenticated, isAdmin, isStoreOwner, user, logout } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { pathname } = useLocation();
@@ -213,37 +213,52 @@ export default function Header() {
               <Icon path={ICONS.store} />
               <span className="hidden sm:inline">Librerías</span>
             </NavLink>
-            <NavLink to="/favoritos" className={quickLinkClass}>
-              <Icon path={ICONS.heart} />
-              <span className="hidden sm:inline">Favoritos</span>
-            </NavLink>
+            {!isStoreOwner && (
+              <NavLink to="/favoritos" className={quickLinkClass}>
+                <Icon path={ICONS.heart} />
+                <span className="hidden sm:inline">Favoritos</span>
+              </NavLink>
+            )}
             {isAdmin && (
               <NavLink to="/admin" className={quickLinkClass}>
                 <Icon path={ICONS.shield} />
                 <span className="hidden md:inline">Administración</span>
               </NavLink>
             )}
+            {isStoreOwner && (
+              <NavLink to="/admin" className={quickLinkClass}>
+                <Icon path={ICONS.store} />
+                <span className="hidden sm:inline">Mi tienda</span>
+              </NavLink>
+            )}
             {isAuthenticated ? (
               <div className="flex items-center gap-1">
-                <NavLink
-                  to="/perfil"
-                  aria-label="Mi perfil"
-                  title="Mi perfil"
-                  className={({ isActive }) =>
-                    `flex items-center gap-1.5 rounded-full py-1 pl-1 pr-1 text-sm transition lg:pr-3 ${
-                      isActive
-                        ? 'bg-white/15 text-white'
-                        : 'text-leather-100 hover:bg-white/10 hover:text-white'
-                    }`
-                  }
-                >
-                  <span className="grid h-7 w-7 place-items-center rounded-full bg-leather-400 text-xs font-bold uppercase text-leather-900">
-                    {firstName.slice(0, 1)}
-                  </span>
-                  <span className="hidden lg:inline" aria-hidden="true">
+                {/* Store owners have no reader profile: show only the greeting. */}
+                {isStoreOwner ? (
+                  <span className="hidden px-2 text-sm text-leather-100 lg:inline">
                     Hola, {firstName}
                   </span>
-                </NavLink>
+                ) : (
+                  <NavLink
+                    to="/perfil"
+                    aria-label="Mi perfil"
+                    title="Mi perfil"
+                    className={({ isActive }) =>
+                      `flex items-center gap-1.5 rounded-full py-1 pl-1 pr-1 text-sm transition lg:pr-3 ${
+                        isActive
+                          ? 'bg-white/15 text-white'
+                          : 'text-leather-100 hover:bg-white/10 hover:text-white'
+                      }`
+                    }
+                  >
+                    <span className="grid h-7 w-7 place-items-center rounded-full bg-leather-400 text-xs font-bold uppercase text-leather-900">
+                      {firstName.slice(0, 1)}
+                    </span>
+                    <span className="hidden lg:inline" aria-hidden="true">
+                      Hola, {firstName}
+                    </span>
+                  </NavLink>
+                )}
                 <button
                   type="button"
                   onClick={handleLogout}

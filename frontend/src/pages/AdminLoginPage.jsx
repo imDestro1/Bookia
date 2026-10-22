@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
+// Panel access for admins and store owners; the API answers 403 for readers.
 export default function AdminLoginPage() {
-  const { login, isAdmin } = useAuth();
+  const { login, canManage } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [email, setEmail] = useState('');
@@ -12,7 +13,7 @@ export default function AdminLoginPage() {
   const [submitting, setSubmitting] = useState(false);
   const redirectTo = location.state?.from?.pathname || '/admin';
 
-  if (isAdmin) return <Navigate to={redirectTo} replace />;
+  if (canManage) return <Navigate to={redirectTo} replace />;
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -23,7 +24,8 @@ export default function AdminLoginPage() {
       navigate(redirectTo, { replace: true });
     } catch (err) {
       if (err.status === 401) setError('Correo o contraseña incorrectos.');
-      else if (err.status === 403) setError('Esta cuenta no es de administrador.');
+      else if (err.status === 403)
+        setError('Esta cuenta no tiene acceso al panel. Usa el acceso de lectores.');
       else setError(err.message);
     } finally {
       setSubmitting(false);
@@ -38,12 +40,12 @@ export default function AdminLoginPage() {
       >
         <div>
           <p className="text-xs font-semibold uppercase tracking-widest text-leather-500">
-            Panel de establecimientos
+            Administración y dueños de tienda
           </p>
-          <h1 className="font-serif text-2xl font-bold text-leather-800">
-            Acceso de administración
-          </h1>
-          <p className="mt-1 text-sm text-stone-600">Inicia sesión para gestionar el catálogo.</p>
+          <h1 className="font-serif text-2xl font-bold text-leather-800">Acceso al panel</h1>
+          <p className="mt-1 text-sm text-stone-600">
+            Inicia sesión para gestionar el catálogo o los datos y ofertas de tu librería.
+          </p>
         </div>
         <div>
           <label htmlFor="email" className="label">

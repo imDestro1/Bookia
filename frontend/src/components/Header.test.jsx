@@ -107,4 +107,33 @@ describe('Header account link', () => {
     await userEvent.click(profileLink);
     expect(screen.getByTestId('location')).toHaveTextContent('/perfil');
   });
+
+  it('hides favorites and the profile for a store owner, and links to their store panel', async () => {
+    renderHeader('/', {
+      isAuthenticated: true,
+      isAdmin: false,
+      isStoreOwner: true,
+      user: { name: 'Rosa Dueña', email: 'rosa@test.dev', role: 'store_owner', store_id: 's1' },
+    });
+    expect(screen.queryByRole('link', { name: 'Favoritos' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Mi perfil' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Administración' })).not.toBeInTheDocument();
+    expect(screen.getByText('Hola, Rosa')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Salir' })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('link', { name: 'Mi tienda' }));
+    expect(screen.getByTestId('location')).toHaveTextContent('/admin');
+  });
+
+  it('keeps favorites for readers', async () => {
+    renderHeader('/', {
+      isAuthenticated: true,
+      isAdmin: false,
+      user: { name: 'Ana', email: 'ana@test.dev', role: 'reader' },
+    });
+    expect(await screen.findByRole('link', { name: 'Favoritos' })).toHaveAttribute(
+      'href',
+      '/favoritos',
+    );
+    expect(screen.queryByRole('link', { name: 'Mi tienda' })).not.toBeInTheDocument();
+  });
 });

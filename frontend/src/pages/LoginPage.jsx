@@ -45,7 +45,12 @@ export default function LoginPage() {
       if (isRegister) {
         await register({ ...values, name: values.name.trim(), email: values.email.trim() });
       } else {
-        await login(values.email.trim(), values.password);
+        const user = await login(values.email.trim(), values.password);
+        // Store owners have no reader area: take them straight to their panel.
+        if (user?.role === 'store_owner') {
+          navigate('/admin', { replace: true });
+          return;
+        }
       }
       navigate(redirectTo, { replace: true });
     } catch (err) {

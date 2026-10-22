@@ -5,20 +5,22 @@ import { favoritesApi } from '../services/bookiaApi';
 
 // Heart toggle for a book; anonymous readers are sent to the login screen.
 export default function FavoriteButton({ bookId }) {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isStoreOwner } = useAuth();
+  // Store owners have no favorites list (the API answers 403).
+  const enabled = isAuthenticated && !isStoreOwner;
   const navigate = useNavigate();
   const [saved, setSaved] = useState(false);
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    if (!isAuthenticated) return undefined;
+    if (!enabled) return undefined;
     const controller = new AbortController();
     favoritesApi
       .list({ signal: controller.signal })
       .then((data) => setSaved((data?.items ?? []).some((book) => book._id === bookId)))
       .catch(() => {});
     return () => controller.abort();
-  }, [isAuthenticated, bookId]);
+  }, [enabled, bookId]);
 
   async function toggle() {
     if (!isAuthenticated) {
@@ -33,6 +35,8 @@ export default function FavoriteButton({ bookId }) {
       setBusy(false);
     }
   }
+
+  if (isStoreOwner) return null;
 
   return (
     <button
