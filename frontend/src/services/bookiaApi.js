@@ -42,6 +42,14 @@ export const auditApi = {
   list: (limit = 50) => http.get('/audit-logs', { params: { limit } }),
 };
 
+// Store owner accounts (admin only).
+export const usersApi = {
+  list: (options) => http.get('/users', options),
+  create: (account) => http.post('/users', account),
+  update: (id, changes) => http.patch(`/users/${encodeURIComponent(id)}`, changes),
+  remove: (id) => http.delete(`/users/${encodeURIComponent(id)}`),
+};
+
 export const reservationsApi = {
   create: (offerId, quantity) => http.post('/reservations', { offer_id: offerId, quantity }),
   mine: (options) => http.get('/reservations/mine', options),

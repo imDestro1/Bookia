@@ -3,7 +3,8 @@ import { formatPrice, parseStock } from '../../services/format';
 import AvailabilityBadge from '../AvailabilityBadge';
 
 // One offer row with inline editing of price and stock.
-export default function OfferRow({ offer, onSave, onDelete }) {
+// `label` replaces the first cell (the store name by default).
+export default function OfferRow({ offer, label, onSave, onDelete }) {
   const [editing, setEditing] = useState(false);
   const [price, setPrice] = useState(String(offer.price));
   const [stock, setStock] = useState(String(offer.stock ?? 0));
@@ -29,7 +30,7 @@ export default function OfferRow({ offer, onSave, onDelete }) {
 
   return (
     <tr>
-      <td className="px-4 py-3 font-semibold">{offer.store?.name}</td>
+      <td className="px-4 py-3 font-semibold">{label ?? offer.store?.name}</td>
       <td className="px-4 py-3">
         {editing ? (
           <input

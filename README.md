@@ -48,7 +48,7 @@ npm install
 npm run dev               # app en http://localhost:5173
 ```
 
-Abre `http://localhost:5173`. El panel de administración está en `http://localhost:5173/admin/login`; entra con el `ADMIN_EMAIL` y `ADMIN_PASSWORD` de tu `.env`.
+Abre `http://localhost:5173`. El panel de administración está en `http://localhost:5173/admin/login`; entra con el `ADMIN_EMAIL` y `ADMIN_PASSWORD` de tu `.env`. Desde la pestaña **Dueños** el admin crea cuentas de dueño de tienda y las asigna a una librería; el dueño entra por el mismo acceso y solo ve **Mi tienda** (los datos y ofertas de su librería). Ojo: `npm run seed` recrea las librerías y borra las cuentas de dueño.
 
 `npm run seed` borra y vuelve a crear libros, establecimientos y ofertas, así que puedes correrlo cuando quieras regresar a los datos de ejemplo.
 

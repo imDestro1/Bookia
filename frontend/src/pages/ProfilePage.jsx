@@ -5,7 +5,7 @@ import { useAsync } from '../hooks/useAsync';
 import { useAuth } from '../hooks/useAuth';
 import { favoritesApi } from '../services/bookiaApi';
 
-const ROLE_LABELS = { admin: 'Administrador', reader: 'Lector' };
+const ROLE_LABELS = { admin: 'Administrador', reader: 'Lector', store_owner: 'Dueño de tienda' };
 
 function formatJoinDate(value) {
   const date = value ? new Date(value) : null;

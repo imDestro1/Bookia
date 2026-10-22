@@ -51,20 +51,24 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
-  const value = useMemo(
-    () => ({
+  const value = useMemo(() => {
+    const isAdmin = user?.role === 'admin';
+    const isStoreOwner = user?.role === 'store_owner';
+    return {
       user,
       status,
       isAuthenticated: status === 'authenticated',
-      isAdmin: user?.role === 'admin',
+      isAdmin,
+      isStoreOwner,
+      // Admins and store owners can enter the /admin panel.
+      canManage: isAdmin || isStoreOwner,
       login,
       register,
       updateProfile,
       logout,
       refresh,
-    }),
-    [user, status, login, register, updateProfile, logout, refresh],
-  );
+    };
+  }, [user, status, login, register, updateProfile, logout, refresh]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

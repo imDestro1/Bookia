@@ -19,6 +19,21 @@ describe('AuthProvider / useAuth', () => {
     await waitFor(() => expect(result.current.status).toBe('authenticated'));
     expect(result.current.user).toEqual(ADMIN);
     expect(result.current.isAdmin).toBe(true);
+    expect(result.current.isStoreOwner).toBe(false);
+    expect(result.current.canManage).toBe(true);
+  });
+
+  it('flags store owners as panel users but not admins', async () => {
+    mockFetch(() =>
+      jsonResponse({
+        user: { _id: 'u2', email: 'rosa@bookia.mx', role: 'store_owner', store_id: 's1' },
+      }),
+    );
+    const { result } = renderHook(() => useAuth(), { wrapper });
+    await waitFor(() => expect(result.current.status).toBe('authenticated'));
+    expect(result.current.isStoreOwner).toBe(true);
+    expect(result.current.isAdmin).toBe(false);
+    expect(result.current.canManage).toBe(true);
   });
 
   it('is anonymous when /auth/me returns 401', async () => {
