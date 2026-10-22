@@ -71,28 +71,51 @@ export default function StoreDetailPage() {
                   <th className="px-4 py-3">Libro</th>
                   <th className="px-4 py-3">Precio</th>
                   <th className="px-4 py-3">Existencias</th>
+                  <th className="w-8 px-4 py-3">
+                    <span className="sr-only">Abrir libro</span>
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-leather-100">
-                {offers.map((offer) => (
-                  <tr key={offer._id}>
-                    <td className="px-4 py-3">
-                      <Link
-                        to={`/libros/${offer.book?._id}`}
-                        className="font-semibold text-ink hover:text-leather-700"
-                      >
-                        {offer.book?.title}
-                      </Link>
-                      <p className="text-xs text-stone-500">{offer.book?.author}</p>
-                    </td>
-                    <td className="px-4 py-3 font-semibold text-leather-700">
-                      {formatPrice(offer.price)}
-                    </td>
-                    <td className="px-4 py-3">
-                      <AvailabilityBadge stock={offer.stock} />
-                    </td>
-                  </tr>
-                ))}
+                {offers.map((offer) => {
+                  const bookId = offer.book?._id;
+                  return (
+                    <tr
+                      key={offer._id}
+                      className={
+                        bookId ? 'group relative transition hover:bg-leather-50' : undefined
+                      }
+                    >
+                      <td className="px-4 py-3">
+                        {bookId ? (
+                          // The link's ::after covers the whole row, so any click on it opens the book.
+                          <Link
+                            to={`/libros/${bookId}`}
+                            className="font-semibold text-ink after:absolute after:inset-0 after:content-[''] group-hover:text-leather-700 group-hover:underline focus:outline-none focus-visible:after:ring-2 focus-visible:after:ring-inset focus-visible:after:ring-leather-400"
+                          >
+                            {offer.book.title}
+                          </Link>
+                        ) : (
+                          <span className="font-semibold text-stone-500">Libro no disponible</span>
+                        )}
+                        <p className="text-xs text-stone-500">{offer.book?.author}</p>
+                      </td>
+                      <td className="px-4 py-3 font-semibold text-leather-700">
+                        {formatPrice(offer.price)}
+                      </td>
+                      <td className="px-4 py-3">
+                        <AvailabilityBadge stock={offer.stock} />
+                      </td>
+                      <td className="w-8 px-4 py-3 text-right text-leather-400" aria-hidden="true">
+                        {bookId && (
+                          <span className="inline-block transition group-hover:translate-x-0.5 group-hover:text-leather-700">
+                            ›
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
