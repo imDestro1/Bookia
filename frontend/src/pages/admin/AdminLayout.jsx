@@ -5,6 +5,7 @@ const TABS = [
   { to: 'libros', label: 'Libros' },
   { to: 'establecimientos', label: 'Establecimientos' },
   { to: 'ofertas', label: 'Ofertas' },
+  { to: 'reservas', label: 'Reservas' },
   { to: 'bitacora', label: 'Bitácora' },
 ];
 

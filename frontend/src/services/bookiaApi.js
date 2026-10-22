@@ -41,3 +41,12 @@ export const favoritesApi = {
 export const auditApi = {
   list: (limit = 50) => http.get('/audit-logs', { params: { limit } }),
 };
+
+export const reservationsApi = {
+  create: (offerId, quantity) => http.post('/reservations', { offer_id: offerId, quantity }),
+  mine: (options) => http.get('/reservations/mine', options),
+  cancel: (id) => http.patch(`/reservations/${encodeURIComponent(id)}/cancel`),
+  manage: (params, options) => http.get('/reservations/manage', { ...options, params }),
+  setStatus: (id, status) =>
+    http.patch(`/reservations/${encodeURIComponent(id)}/status`, { status }),
+};

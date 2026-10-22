@@ -6,6 +6,7 @@ import AdminLoginPage from './pages/AdminLoginPage';
 import FavoritesPage from './pages/FavoritesPage';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
+import MyReservationsPage from './pages/MyReservationsPage';
 import NotFoundPage from './pages/NotFoundPage';
 import ProfilePage from './pages/ProfilePage';
 import StoreDetailPage from './pages/StoreDetailPage';
@@ -14,6 +15,7 @@ import AdminLayout from './pages/admin/AdminLayout';
 import AuditLogAdmin from './pages/admin/AuditLogAdmin';
 import BooksAdmin from './pages/admin/BooksAdmin';
 import OffersAdmin from './pages/admin/OffersAdmin';
+import ReservationsAdmin from './pages/admin/ReservationsAdmin';
 import StoresAdmin from './pages/admin/StoresAdmin';
 
 export default function App() {
@@ -27,6 +29,7 @@ export default function App() {
         <Route path="ingresar" element={<LoginPage />} />
         <Route path="favoritos" element={<FavoritesPage />} />
         <Route path="perfil" element={<ProfilePage />} />
+        <Route path="mis-reservas" element={<MyReservationsPage />} />
         <Route path="admin/login" element={<AdminLoginPage />} />
         <Route element={<ProtectedRoute />}>
           <Route path="admin" element={<AdminLayout />}>
@@ -34,6 +37,7 @@ export default function App() {
             <Route path="libros" element={<BooksAdmin />} />
             <Route path="establecimientos" element={<StoresAdmin />} />
             <Route path="ofertas" element={<OffersAdmin />} />
+            <Route path="reservas" element={<ReservationsAdmin />} />
             <Route path="bitacora" element={<AuditLogAdmin />} />
           </Route>
         </Route>

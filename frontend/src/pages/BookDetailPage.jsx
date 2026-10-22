@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import AvailabilityBadge from '../components/AvailabilityBadge';
 import BackLink from '../components/BackLink';
 import FavoriteButton from '../components/FavoriteButton';
+import ReserveButton from '../components/ReserveButton';
 import { EmptyState, ErrorState, LoadingState } from '../components/StatusMessages';
 import { useAsync } from '../hooks/useAsync';
 import { booksApi } from '../services/bookiaApi';
@@ -31,6 +33,8 @@ export default function BookDetailPage() {
     error,
     reload,
   } = useAsync(({ signal }) => booksApi.getById(id, { signal }), [id]);
+  // Copies reserved from this page, subtracted locally so the cards update without a reload.
+  const [reserved, setReserved] = useState({});
 
   if (loading) return <LoadingState />;
   if (error) {
@@ -43,7 +47,16 @@ export default function BookDetailPage() {
     );
   }
 
-  const offers = sortOffers(book.offers ?? []);
+  const offers = sortOffers(
+    (book.offers ?? []).map((offer) => ({
+      ...offer,
+      stock: Math.max(0, offerStock(offer) - (reserved[offer._id] ?? 0)),
+    })),
+  );
+
+  function handleReserved(offerId, quantity) {
+    setReserved((prev) => ({ ...prev, [offerId]: (prev[offerId] ?? 0) + quantity }));
+  }
 
   return (
     <div className="space-y-6">
@@ -112,6 +125,7 @@ export default function BookDetailPage() {
                       Ver en mapa
                     </a>
                   )}
+                  <ReserveButton offer={offer} bookId={book._id} onReserved={handleReserved} />
                 </li>
               ))}
             </ul>
