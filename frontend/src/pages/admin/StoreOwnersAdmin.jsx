@@ -157,7 +157,14 @@ function OwnerRow({ owner, stores, onReassign, onDelete }) {
 
   return (
     <tr>
-      <td className="px-4 py-3 font-semibold">{owner.name}</td>
+      <td className="px-4 py-3 font-semibold">
+        {owner.name}
+        {owner.must_change_password && (
+          <span className="ml-2 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">
+            Debe cambiar contraseña
+          </span>
+        )}
+      </td>
       <td className="px-4 py-3">{owner.email}</td>
       <td className="px-4 py-3">
         {editing ? (

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import ChangePasswordForm from '../components/ChangePasswordForm';
 import { EmptyState, LoadingState } from '../components/StatusMessages';
 import { useAsync } from '../hooks/useAsync';
 import { useAuth } from '../hooks/useAuth';
@@ -131,6 +132,11 @@ export default function ProfilePage() {
             {saving ? 'Guardando…' : 'Guardar cambios'}
           </button>
         </form>
+
+        <section className="card space-y-4 p-6 md:col-span-3">
+          <h2 className="font-serif text-xl font-bold text-leather-800">Contraseña</h2>
+          <ChangePasswordForm />
+        </section>
 
         <section className="card space-y-3 p-6 md:col-span-2">
           <h2 className="font-serif text-xl font-bold text-leather-800">Accesos</h2>
