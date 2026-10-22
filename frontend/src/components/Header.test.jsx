@@ -52,3 +52,29 @@ describe('Header categories menu', () => {
     expect(screen.queryByRole('menu')).not.toBeInTheDocument();
   });
 });
+
+describe('Header search', () => {
+  it('stays hidden until the search icon opens it, then searches and closes', async () => {
+    renderHeader();
+    expect(screen.queryByRole('search')).not.toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Buscar' }));
+    const input = screen.getByLabelText('Buscar libros');
+    expect(input).toHaveFocus();
+
+    await userEvent.type(input, 'Rulfo{Enter}');
+    expect(screen.getByTestId('location')).toHaveTextContent('/?q=Rulfo');
+    expect(screen.queryByRole('search')).not.toBeInTheDocument();
+  });
+
+  it('closes with Escape or the close button', async () => {
+    renderHeader();
+    await userEvent.click(screen.getByRole('button', { name: 'Buscar' }));
+    await userEvent.keyboard('{Escape}');
+    expect(screen.queryByRole('search')).not.toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Buscar' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Cerrar búsqueda' }));
+    expect(screen.queryByRole('search')).not.toBeInTheDocument();
+  });
+});
