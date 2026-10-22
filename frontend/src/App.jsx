@@ -7,6 +7,7 @@ import AdminLoginPage from './pages/AdminLoginPage';
 import FavoritesPage from './pages/FavoritesPage';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
+import MyReservationsPage from './pages/MyReservationsPage';
 import NotFoundPage from './pages/NotFoundPage';
 import ProfilePage from './pages/ProfilePage';
 import StoreDetailPage from './pages/StoreDetailPage';
@@ -16,6 +17,7 @@ import AuditLogAdmin from './pages/admin/AuditLogAdmin';
 import BooksAdmin from './pages/admin/BooksAdmin';
 import MyStoreAdmin from './pages/admin/MyStoreAdmin';
 import OffersAdmin from './pages/admin/OffersAdmin';
+import ReservationsAdmin from './pages/admin/ReservationsAdmin';
 import StoreOwnersAdmin from './pages/admin/StoreOwnersAdmin';
 import StoresAdmin from './pages/admin/StoresAdmin';
 
@@ -31,11 +33,14 @@ export default function App() {
         <Route element={<ReaderRoute />}>
           <Route path="favoritos" element={<FavoritesPage />} />
           <Route path="perfil" element={<ProfilePage />} />
+          <Route path="mis-reservas" element={<MyReservationsPage />} />
         </Route>
         <Route path="admin/login" element={<AdminLoginPage />} />
         <Route element={<ProtectedRoute />}>
           <Route path="admin" element={<AdminLayout />}>
             <Route index element={<AdminIndexRedirect />} />
+            {/* Admins see every store's reservations, store owners only their own. */}
+            <Route path="reservas" element={<ReservationsAdmin />} />
             <Route element={<ProtectedRoute role="admin" />}>
               <Route path="libros" element={<BooksAdmin />} />
               <Route path="establecimientos" element={<StoresAdmin />} />

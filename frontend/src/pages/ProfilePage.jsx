@@ -142,6 +142,11 @@ export default function ProfilePage() {
               </span>
             )}
           </Link>
+          {user?.role === 'reader' && (
+            <Link to="/mis-reservas" className="btn-secondary w-full">
+              Mis reservas
+            </Link>
+          )}
           {isAdmin && (
             <Link to="/admin" className="btn-secondary w-full">
               Panel de administración
