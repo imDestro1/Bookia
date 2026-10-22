@@ -42,6 +42,13 @@ export function AuthProvider({ children }) {
     return data?.user;
   }, []);
 
+  // Body { current_password, new_password }; clears must_change_password on success.
+  const changePassword = useCallback(async (passwords) => {
+    const data = await authApi.changePassword(passwords);
+    setUser(data?.user ?? null);
+    return data?.user;
+  }, []);
+
   const logout = useCallback(async () => {
     try {
       await authApi.logout();
@@ -62,13 +69,16 @@ export function AuthProvider({ children }) {
       isStoreOwner,
       // Admins and store owners can enter the /admin panel.
       canManage: isAdmin || isStoreOwner,
+      // True for accounts created by an admin until they replace the initial password.
+      mustChangePassword: Boolean(user?.must_change_password),
       login,
       register,
       updateProfile,
+      changePassword,
       logout,
       refresh,
     };
-  }, [user, status, login, register, updateProfile, logout, refresh]);
+  }, [user, status, login, register, updateProfile, changePassword, logout, refresh]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

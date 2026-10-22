@@ -3,6 +3,7 @@ import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 import ReaderRoute from './components/ReaderRoute';
 import BookDetailPage from './pages/BookDetailPage';
+import ChangePasswordPage from './pages/ChangePasswordPage';
 import AdminLoginPage from './pages/AdminLoginPage';
 import FavoritesPage from './pages/FavoritesPage';
 import HomePage from './pages/HomePage';
@@ -36,6 +37,7 @@ export default function App() {
           <Route path="mis-reservas" element={<MyReservationsPage />} />
         </Route>
         <Route path="admin/login" element={<AdminLoginPage />} />
+        <Route path="cambiar-contrasena" element={<ChangePasswordPage />} />
         <Route element={<ProtectedRoute />}>
           <Route path="admin" element={<AdminLayout />}>
             <Route index element={<AdminIndexRedirect />} />

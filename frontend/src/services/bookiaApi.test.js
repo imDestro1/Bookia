@@ -38,6 +38,7 @@ describe('bookiaApi', () => {
     await authApi.login('a@b.mx', 'secret');
     await authApi.me();
     await authApi.logout();
+    await authApi.changePassword({ current_password: 'a', new_password: 'b' });
     await auditApi.list();
     expect(calls(fetchMock)).toEqual([
       'GET /api/stores',
@@ -51,6 +52,7 @@ describe('bookiaApi', () => {
       'POST /api/auth/login',
       'GET /api/auth/me',
       'POST /api/auth/logout',
+      'PATCH /api/auth/password',
       'GET /api/audit-logs?limit=50',
     ]);
     expect(JSON.parse(fetchMock.mock.calls[8][1].body)).toEqual({

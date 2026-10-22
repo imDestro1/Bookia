@@ -30,6 +30,7 @@ export const authApi = {
   logout: () => http.post('/auth/logout'),
   me: () => http.get('/auth/me'),
   updateMe: (profile) => http.patch('/auth/me', profile),
+  changePassword: (passwords) => http.patch('/auth/password', passwords),
 };
 
 export const favoritesApi = {

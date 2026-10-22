@@ -11,6 +11,7 @@ function renderWithAuth(auth, path = '/admin') {
       <MemoryRouter initialEntries={[path]} future={ROUTER_FUTURE}>
         <Routes>
           <Route path="/admin/login" element={<p>Página de login</p>} />
+          <Route path="/cambiar-contrasena" element={<p>Cambia tu contraseña</p>} />
           <Route element={<ProtectedRoute />}>
             <Route path="/admin" element={<p>Panel privado</p>} />
             <Route element={<ProtectedRoute role="admin" />}>
@@ -68,5 +69,11 @@ describe('ProtectedRoute', () => {
   it('opens admin-only sections for admins', () => {
     renderWithAuth({ status: 'authenticated', isAdmin: true }, '/admin/libros');
     expect(screen.getByText('Solo administradores')).toBeInTheDocument();
+  });
+
+  it('sends accounts with a pending password change to the change screen', () => {
+    renderWithAuth({ status: 'authenticated', isStoreOwner: true, mustChangePassword: true });
+    expect(screen.getByText('Cambia tu contraseña')).toBeInTheDocument();
+    expect(screen.queryByText('Panel privado')).not.toBeInTheDocument();
   });
 });
