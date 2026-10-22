@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link, NavLink, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, NavLink, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { booksApi } from '../services/bookiaApi';
 
@@ -40,12 +40,31 @@ export default function Header() {
   const { isAuthenticated, isAdmin, user, logout } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { pathname } = useLocation();
+  const isHome = pathname === '/';
   const [query, setQuery] = useState(searchParams.get('q') ?? '');
   const [genres, setGenres] = useState([]);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
   const categoriesRef = useRef(null);
   const [searchOpen, setSearchOpen] = useState(false);
   const searchInputRef = useRef(null);
+  const headerSearchOpen = searchOpen && !isHome;
+
+  // Close the header search whenever the route changes.
+  useEffect(() => {
+    setSearchOpen(false);
+  }, [pathname]);
+
+  // The home page has its own search box: send the user there instead of opening a second one.
+  function handleSearchToggle() {
+    if (isHome) {
+      const homeSearch = document.getElementById('q');
+      homeSearch?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      homeSearch?.focus({ preventScroll: true });
+      return;
+    }
+    setSearchOpen((open) => !open);
+  }
   const activeGenre = searchParams.get('genre') ?? '';
 
   // Close the categories panel on outside click or Escape.
@@ -122,17 +141,17 @@ export default function Header() {
           <nav aria-label="Accesos" className="flex items-center gap-1">
             <button
               type="button"
-              onClick={() => setSearchOpen((open) => !open)}
-              aria-expanded={searchOpen}
+              onClick={handleSearchToggle}
+              aria-expanded={headerSearchOpen}
               aria-controls="header-search-panel"
-              aria-label={searchOpen ? 'Cerrar búsqueda' : 'Buscar'}
+              aria-label={headerSearchOpen ? 'Cerrar búsqueda' : 'Buscar'}
               className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition ${
-                searchOpen
+                headerSearchOpen
                   ? 'bg-leather-300 text-leather-900'
                   : 'text-leather-100 hover:bg-white/10 hover:text-white'
               }`}
             >
-              <Icon path={searchOpen ? ICONS.close : ICONS.search} />
+              <Icon path={headerSearchOpen ? ICONS.close : ICONS.search} />
               <span className="hidden md:inline" aria-hidden="true">
                 Buscar
               </span>
@@ -233,10 +252,10 @@ export default function Header() {
       {/* Search panel: hidden until the search icon opens it, so the header stays light. */}
       <div
         id="header-search-panel"
-        hidden={!searchOpen}
+        hidden={!headerSearchOpen}
         className="animate-[header-search-in_180ms_ease-out] border-t border-white/5 bg-leather-800"
       >
-        {searchOpen && (
+        {headerSearchOpen && (
           <form
             role="search"
             onSubmit={handleSearch}
