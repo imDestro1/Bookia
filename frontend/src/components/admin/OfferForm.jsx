@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { parseStock } from '../../services/format';
 
-// Form to attach a new offer (store + price + stock) to the selected book.
-export default function OfferForm({ stores, onSubmit }) {
+// Form to attach a new offer (price + stock) plus a store (`stores`) and/or a book (`books`).
+// Pass only `books` when the store is fixed (store owner panel), only `stores` when the book is.
+export default function OfferForm({ stores, books, onSubmit }) {
   const [storeId, setStoreId] = useState('');
+  const [bookId, setBookId] = useState('');
   const [price, setPrice] = useState('');
   const [stock, setStock] = useState('1');
   const [stockError, setStockError] = useState('');
@@ -19,8 +21,12 @@ export default function OfferForm({ stores, onSubmit }) {
     setStockError('');
     setSaving(true);
     try {
-      await onSubmit({ store_id: storeId, price: Number(price), stock: parsed.value });
+      const target = {};
+      if (books) target.book_id = bookId;
+      if (stores) target.store_id = storeId;
+      await onSubmit({ ...target, price: Number(price), stock: parsed.value });
       setStoreId('');
+      setBookId('');
       setPrice('');
       setStock('1');
     } finally {
@@ -30,25 +36,48 @@ export default function OfferForm({ stores, onSubmit }) {
 
   return (
     <form onSubmit={handleSubmit} className="grid gap-3 sm:grid-cols-4 sm:items-end">
-      <div className="sm:col-span-2">
-        <label htmlFor="offer-store" className="label">
-          Establecimiento *
-        </label>
-        <select
-          id="offer-store"
-          required
-          className="input"
-          value={storeId}
-          onChange={(e) => setStoreId(e.target.value)}
-        >
-          <option value="">Selecciona…</option>
-          {stores.map((store) => (
-            <option key={store._id} value={store._id}>
-              {store.name}
-            </option>
-          ))}
-        </select>
-      </div>
+      {books && (
+        <div className="sm:col-span-2">
+          <label htmlFor="offer-book-id" className="label">
+            Libro *
+          </label>
+          <select
+            id="offer-book-id"
+            required
+            className="input"
+            value={bookId}
+            onChange={(e) => setBookId(e.target.value)}
+          >
+            <option value="">Selecciona…</option>
+            {books.map((book) => (
+              <option key={book._id} value={book._id}>
+                {book.title} — {book.author}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+      {stores && (
+        <div className="sm:col-span-2">
+          <label htmlFor="offer-store" className="label">
+            Establecimiento *
+          </label>
+          <select
+            id="offer-store"
+            required
+            className="input"
+            value={storeId}
+            onChange={(e) => setStoreId(e.target.value)}
+          >
+            <option value="">Selecciona…</option>
+            {stores.map((store) => (
+              <option key={store._id} value={store._id}>
+                {store.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
       <div>
         <label htmlFor="offer-price" className="label">
           Precio (MXN) *

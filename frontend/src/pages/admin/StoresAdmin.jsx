@@ -5,14 +5,7 @@ import { EmptyState, ErrorState, LoadingState } from '../../components/StatusMes
 import { useAsync } from '../../hooks/useAsync';
 import { useNotice } from '../../hooks/useNotice';
 import { storesApi } from '../../services/bookiaApi';
-
-const STORE_FIELDS = [
-  { name: 'name', label: 'Nombre', required: true, wide: true },
-  { name: 'address', label: 'Dirección', required: true, wide: true },
-  { name: 'phone', label: 'Teléfono', type: 'tel' },
-  { name: 'schedule', label: 'Horario' },
-  { name: 'maps_url', label: 'Enlace de Google Maps', type: 'url', wide: true },
-];
+import { STORE_FIELDS } from './storeFields';
 
 export default function StoresAdmin() {
   const [editing, setEditing] = useState(null);

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { auditApi, authApi, booksApi, offersApi, storesApi } from './bookiaApi';
+import { auditApi, authApi, booksApi, offersApi, storesApi, usersApi } from './bookiaApi';
 import { jsonResponse, mockFetch } from '../test/mockFetch';
 
 function calls(fetchMock) {
@@ -57,5 +57,31 @@ describe('bookiaApi', () => {
       email: 'a@b.mx',
       password: 'secret',
     });
+  });
+
+  it('maps store owner account endpoints', async () => {
+    const fetchMock = mockFetch(() => jsonResponse({}));
+    await usersApi.list();
+    await usersApi.create({
+      name: 'Rosa',
+      email: 'rosa@bookia.mx',
+      password: 'secret123',
+      store_id: 's1',
+    });
+    await usersApi.update('u 1', { store_id: 's2' });
+    await usersApi.remove('u1');
+    expect(calls(fetchMock)).toEqual([
+      'GET /api/users',
+      'POST /api/users',
+      'PATCH /api/users/u%201',
+      'DELETE /api/users/u1',
+    ]);
+    expect(JSON.parse(fetchMock.mock.calls[1][1].body)).toEqual({
+      name: 'Rosa',
+      email: 'rosa@bookia.mx',
+      password: 'secret123',
+      store_id: 's1',
+    });
+    expect(JSON.parse(fetchMock.mock.calls[2][1].body)).toEqual({ store_id: 's2' });
   });
 });
