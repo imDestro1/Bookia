@@ -49,7 +49,8 @@ export default function BookDetailPage() {
     <div className="space-y-6">
       <BackLink to="/">Volver a la búsqueda</BackLink>
       <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:items-start">
-        <article className="card p-6 sm:p-8 lg:sticky lg:top-6">
+        {/* lg:mt-11 = altura del título "Dónde conseguirlo" (2rem) + su margen (0.75rem), para alinear con las tarjetas */}
+        <article className="card p-6 sm:p-8 lg:sticky lg:top-6 lg:mt-11">
           {book.genre && (
             <span className="rounded-full bg-leather-50 px-2.5 py-0.5 text-xs font-semibold text-leather-700">
               {book.genre}
